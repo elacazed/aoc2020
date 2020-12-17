@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class D12 {
 
@@ -83,11 +84,29 @@ public class D12 {
 
         @Override
         public void forward(int amount) {
-            int dx = xPos * amount;
-            int dy = yPos * amount;
+            xShip += xPos * amount;
+            yShip += yPos * amount;
+        }
+    }
 
-            xShip += dx;
-            yShip += dy;
+    private enum Action {
+
+        N((s,i) -> s.yPos += i),
+        S((s,i) -> s.yPos -= i),
+        E((s,i) -> s.xPos += i),
+        W((s,i) -> s.xPos -= i),
+        L((s, i) -> s.turnRight(360 - i)),
+        R(Ship::turnRight),
+        F(Ship::forward);
+
+        final BiConsumer<Ship, Integer> action;
+
+        Action(BiConsumer<Ship, Integer> action) {
+            this.action = action;
+        }
+
+        public void apply(Ship s, int amount) {
+            action.accept(s, amount);
         }
     }
 
@@ -114,32 +133,7 @@ public class D12 {
         }
 
         public void move(String line, boolean display) {
-            int amount = Integer.parseInt(line.substring(1));
-            switch (line.charAt(0)) {
-                case 'N':
-                    yPos += amount;
-                    break;
-                case 'S':
-                    yPos -= amount;
-                    break;
-                case 'E':
-                    xPos += amount;
-                    break;
-                case 'W':
-                    xPos -= amount;
-                    break;
-                case 'L':
-                    turnRight(360 - amount);
-                    break;
-                case 'R':
-                    turnRight(amount);
-                    break;
-                case 'F':
-                    forward(amount);
-                    break;
-                default:
-                    throw new IllegalArgumentException(line);
-            }
+            Action.valueOf(line.substring(0, 1)).apply(this, Integer.parseInt(line.substring(1)));
             if (display) {
                 System.out.println(toString(line));
             }
@@ -150,7 +144,7 @@ public class D12 {
         }
 
         public void turnRight(int degrees) {
-            direction = direction + degrees;
+            direction = (direction + degrees) % 360;
         }
 
         public long getManhattanDistance() {
@@ -158,20 +152,17 @@ public class D12 {
         }
 
         public void forward(int amount) {
-            switch ((direction / 90) % 4) {
+            switch (direction) {
                 case 0:
                     xPos += amount;
                     break;
-                case 1:
-                case -3:
+                case 90:
                     yPos -= amount;
                     break;
-                case 2:
-                case -2:
+                case 180:
                     xPos -= amount;
                     break;
-                case 3:
-                case -1:
+                case 270:
                     yPos += amount;
                     break;
                 default:
