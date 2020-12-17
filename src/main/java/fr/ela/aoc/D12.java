@@ -49,15 +49,6 @@ public class D12 {
             this.yShip = 0;
         }
 
-        @Override
-        public void turn(int degrees) {
-            if (degrees < 0) {
-                turnRight(360 + degrees);
-            } else {
-                turnRight(degrees);
-            }
-        }
-
         public void turnRight(int degrees) {
             int x = xPos;
             int y = yPos;
@@ -126,22 +117,22 @@ public class D12 {
             int amount = Integer.parseInt(line.substring(1));
             switch (line.charAt(0)) {
                 case 'N':
-                    goNorth(amount);
+                    yPos += amount;
                     break;
                 case 'S':
-                    goSouth(amount);
+                    yPos -= amount;
                     break;
                 case 'E':
-                    goEast(amount);
+                    xPos += amount;
                     break;
                 case 'W':
-                    goWest(amount);
+                    xPos -= amount;
                     break;
                 case 'L':
-                    turn(-1 * amount);
+                    turnRight(360 - amount);
                     break;
                 case 'R':
-                    turn(amount);
+                    turnRight(amount);
                     break;
                 case 'F':
                     forward(amount);
@@ -158,23 +149,7 @@ public class D12 {
             return "Position " + getXShip() + "," + getYShip() + " " + line;
         }
 
-        public void goNorth(int amount) {
-            yPos += amount;
-        }
-
-        public void goSouth(int amount) {
-            yPos -= amount;
-        }
-
-        public void goEast(int amount) {
-            xPos += amount;
-        }
-
-        public void goWest(int amount) {
-            xPos -= amount;
-        }
-
-        public void turn(int degrees) {
+        public void turnRight(int degrees) {
             direction = direction + degrees;
         }
 
