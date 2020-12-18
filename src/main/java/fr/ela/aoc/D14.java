@@ -89,7 +89,7 @@ public class D14 {
 
         public long apply(long value) {
             char[] masked = asCharArray(value);
-            map.entrySet().forEach(e -> masked[e.getKey()] = e.getValue());
+            map.forEach((key, value1) -> masked[key] = value1);
             return Long.parseLong(new String(masked), 2);
         }
     }
